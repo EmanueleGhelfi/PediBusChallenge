@@ -14,10 +14,20 @@ import java.util.List;
 public class Parser {
     private AMPL ampl;
 
-    public Parser (String datPath) throws IOException {
+    public Parser (String datPath) {
         ampl = new AMPL();
-        ampl.read(Constants.MOD_PATH);
-        ampl.readData(datPath);
+        try {
+            ampl.read(Constants.MOD_PATH);
+        } catch (IOException e) {
+            System.out.println("unable to open fake model, needed to parse the .dat with AMPL");
+            e.printStackTrace();
+        }
+        try {
+            ampl.readData(datPath);
+        } catch (IOException e) {
+            System.out.println("unable to find input path");
+            e.printStackTrace();
+        }
     }
 
     public int getAlpha() {

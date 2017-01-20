@@ -13,12 +13,24 @@ import java.util.List;
  */
 public class Test{
 
-    public static void main(String[] args) throws IOException {
-        Parser p = new Parser("inputs/pedibus_300.dat");
-        int alpha = p.getAlpha();
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("write input and output file path as parameter");
+            System.exit(0);
+        }
+
+        String inputPath = args[0];
+        String ouputPath = args[1];
+
+        littleInterfacesTest(inputPath, ouputPath);
+    }
+
+    public static void littleInterfacesTest (String inputPath, String ouputPath) {
+        Parser p = new Parser(inputPath);
         List<Vertex> vertexList = p.getVertexListWithoutSchool();
         SimpleWeightedGraph<Vertex, Arc> graph = GraphUtility.createCompleteGraph(vertexList);
         List<Vertex> hamiltonian = HamiltonianCycle.getApproximateOptimalForCompleteGraph(graph);
+        SimpleWeightedGraph<Vertex, Arc> graph1 = GraphUtility.createCompleteGraph(hamiltonian);
+        SolutionFormatter.writeSolution(graph1, ouputPath);
     }
-
 }

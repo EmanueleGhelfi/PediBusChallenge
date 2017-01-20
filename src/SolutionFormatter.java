@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by emilianogagliardi on 20/01/2017.
  */
-public class solutionFormatter {
+public class SolutionFormatter {
 
     public static void writeSolution (SimpleWeightedGraph graph, String destinationPath) {
         try{
@@ -25,7 +25,8 @@ public class solutionFormatter {
             }
             writer.close();
         } catch (IOException e) {
-            System.out.println("impossible to write the file");
+            System.out.println("unable to write the output file");
+            e.printStackTrace();
         }
     }
 }
