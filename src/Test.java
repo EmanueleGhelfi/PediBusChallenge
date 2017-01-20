@@ -1,10 +1,9 @@
-import com.ampl.*;
-import com.sun.xml.internal.rngom.digested.DDataPattern;
-import org.jgrapht.EdgeFactory;
+import GraphCore.Arc;
+import GraphCore.GraphUtility;
+import GraphCore.Vertex;
 import org.jgrapht.alg.HamiltonianCycle;
-import org.jgrapht.graph.ClassBasedEdgeFactory;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import parser.Parser;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,10 +14,11 @@ import java.util.List;
 public class Test{
 
     public static void main(String[] args) throws IOException {
-        Parser p = new Parser("pedibus_300.dat");
-        List<Vertex> vList = HamiltonianCycle.getApproximateOptimalForCompleteGraph(p.createGraph());
-        for (Vertex v : vList) {
-            System.out.println(v);
-        }
+        Parser p = new Parser("inputs/pedibus_300.dat");
+        int alpha = p.getAlpha();
+        List<Vertex> vertexList = p.getVertexListWithoutSchool();
+        SimpleWeightedGraph<Vertex, Arc> graph = GraphUtility.createCompleteGraph(vertexList);
+        List<Vertex> hamiltonian = HamiltonianCycle.getApproximateOptimalForCompleteGraph(graph);
     }
+
 }
