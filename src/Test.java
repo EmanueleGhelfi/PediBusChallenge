@@ -5,7 +5,6 @@ import org.jgrapht.alg.HamiltonianCycle;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import parser.Parser;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
