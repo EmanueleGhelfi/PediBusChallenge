@@ -1,13 +1,13 @@
 /**
  * Created by emilianogagliardi on 20/01/2017.
  */
-public class Edge {
+public class Vertex {
     private double coordX;
     private double coordY;
     //TODO possible optimization with parameter distance and distance from S
 
 
-    public Edge(double coordX, double coordY) {
+    public Vertex(double coordX, double coordY) {
         this.coordX = coordX;
         this.coordY = coordY;
     }

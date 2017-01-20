@@ -1,5 +1,6 @@
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
@@ -10,25 +11,27 @@ import java.util.ArrayList;
  */
 public class MapCreator {
 
-    private UndirectedGraph<Node, DefaultEdge> undirectedGraph;
+    private WeightedGraph<Node, DefaultEdge> weightedGraph;
 
-    public UndirectedGraph<Node,DefaultEdge> getUndirectedGraph(){
-        return undirectedGraph;
+    public WeightedGraph<Node,DefaultEdge> getUndirectedGraph(){
+        return weightedGraph;
     }
 
     public MapCreator(){
-        undirectedGraph = new SimpleWeightedGraph<Node, DefaultEdge>(DefaultEdge.class);
+        weightedGraph = new SimpleWeightedGraph<Node, DefaultEdge>(DefaultEdge.class);
     }
 
     public void addNode(Node node){
-        undirectedGraph.addVertex(node);
+        weightedGraph.addVertex(node);
     }
 
     public void createGraph(){
 
         List<Node> alreadyVisitedNodes = new ArrayList<Node>();
-        for(Node node: undirectedGraph.vertexSet()){
+        for(Node node: weightedGraph.vertexSet()){
             alreadyVisitedNodes.add(node);
+            for(Node toNode: weightedGraph)
+
 
         }
     }
