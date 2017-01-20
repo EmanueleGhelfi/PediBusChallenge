@@ -12,7 +12,8 @@ public class Test {
 
         AMPL ampl  = new AMPL();
         try {
-            ampl.readData("../pedibus_10.dat");
+            ampl.read("pedibus_mod.mod");
+            ampl.readData("pedibus_10.dat");
             Parameter alpha =ampl.getParameter("alpha");
             System.out.println(alpha);
 
