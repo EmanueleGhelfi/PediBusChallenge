@@ -5,7 +5,6 @@ import org.jgrapht.graph.DefaultWeightedEdge;
  */
 public class Arc extends DefaultWeightedEdge{
     private double dangerousness;
-    private double length;
 
     public Arc(double dangerousness) {
         this.dangerousness = dangerousness;
