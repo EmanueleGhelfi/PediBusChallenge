@@ -70,7 +70,7 @@ public class GraphUtility {
             graph.addVertex(v);
         }
 
-        vertecesToAttach.add(0,new Vertex(0,0,0));
+//        vertecesToAttach.add(0,new Vertex(0,0,0));
 
         for (int i = 0; i < vertecesToAttach.size() - 1; i++) {
             Arc a = new Arc();
@@ -79,6 +79,9 @@ public class GraphUtility {
             graph.addEdge(v1, v2, a);
             graph.setEdgeWeight(a, v1.computeDistance(v2));
         }
+
+        graph.addEdge(new Vertex(0, 0, 0), vertecesToAttach.get(0));
+        graph.setEdgeWeight(graph.getEdge(new Vertex(0, 0, 0), vertecesToAttach.get(0)), vertecesToAttach.get(0).computeDistanceFromSchool());
 
         return graph;
     }

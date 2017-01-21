@@ -30,9 +30,10 @@ public class Parser {
         }
     }
 
-    public int getAlpha() {
+    public double getAlpha() {
         Double d = (double) ampl.getValue("alpha");
-        return d.intValue();
+        System.out.println("ALPHA :"+d);
+        return d;
     }
 
     private int getN() {
@@ -45,9 +46,12 @@ public class Parser {
         int n = getN();
         Parameter coordX = ampl.getParameter("coordX");
         Parameter coordY = ampl.getParameter("coordY");
+        System.out.println(coordX);
         for (int i = 1; i <= n; i ++) {
+            System.out.println("Vertex "+ i+" "+ coordX.get(i)+" "+ coordY.get(i));
             Vertex v = new Vertex(i, (double) coordX.get(i), (double) coordY.get(i));
             vertices.add(v);
+            System.out.println("Vertex "+ v);
         }
         return vertices;
     }

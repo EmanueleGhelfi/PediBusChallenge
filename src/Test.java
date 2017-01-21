@@ -26,7 +26,8 @@ public class Test{
         Parser p = new Parser(inputPath);
         List<Vertex> vertexList = p.getVertexListWithoutSchool();
         SimpleWeightedGraph<Vertex, Arc> graph = GraphUtility.createCompleteGraph(vertexList);
-        SimpleWeightedGraph<Vertex, Arc> graph1  = FirstSolver.solve(graph,p.getAlpha());
+        FirstSolver s = new FirstSolver();
+        SimpleWeightedGraph<Vertex, Arc> graph1  = s.solve(graph,p.getAlpha(), 0);
         SolutionFormatter.writeSolution(graph1, ouputPath);
     }
 

@@ -19,75 +19,66 @@ import java.util.List;
  * alpha condition is satisfied and the vertices are all connected.
  */
 public class FirstSolver {
-    private static SimpleWeightedGraph<Vertex, Arc> solution;
+    private SimpleWeightedGraph<Vertex, Arc> solution;
+    private Vertex school;
+
+    public FirstSolver() {
+         solution = new SimpleWeightedGraph<Vertex, Arc>(Arc.class);
+         school = new Vertex(0, 0, 0);
+         solution.addVertex(school);
+    }
 
     /**
      *
-     * @param completeGraph graph without school
+     * @param completeGraph graph without school, it represents the set of the vertices that aren't yet in the sol
      * @param alpha
      * @return
      */
-    public static SimpleWeightedGraph<Vertex,Arc> solve(SimpleWeightedGraph<Vertex,Arc> completeGraph, double alpha){
+    public SimpleWeightedGraph<Vertex,Arc> solve(SimpleWeightedGraph<Vertex,Arc> completeGraph,
+                                                        double alpha, int iteration){
+        System.out.println(completeGraph.vertexSet().size());
+        System.out.println(alpha);
+        //end of recursion: all nodes are in the solution graph, so the input graph is empty
+        if (completeGraph.vertexSet().size() == 0) return solution;
 
-        //variable distance used in the for loop for maintaining the overall distance
-        double distance=0;
+        //compute the hamiltonian cycle contain all the nodes that are not in the intermediate solution
+        List<Vertex> hamiltonian = HamiltonianCycle.getApproximateOptimalForCompleteGraph(completeGraph);
 
-        //the list of verteces satisfying alpha
-        List<Vertex> vertexListCorrect=new ArrayList<>();
+        //find the nearest node to the school
+        Vertex nearest = GraphUtility.nearestToSchool(hamiltonian);
 
-        //add school to solution
-        if(!solution.containsVertex(new Vertex(0,0,0))){
-            solution.addVertex(new Vertex(0,0,0));
+        //split the list and rearrange it such to have the nearest as first
+        List<Vertex> firstSublist = hamiltonian.subList(0, hamiltonian.indexOf(nearest)); //this list doesn't contain nearest
+        List<Vertex> rearrangedHamiltonian = hamiltonian.subList(hamiltonian.indexOf(nearest), hamiltonian.size());
+        rearrangedHamiltonian.addAll(firstSublist);
+
+        //Add the first vertex to the solution, it certainly satisfies the alpha condition if alpha > 1
+        solution.addVertex(nearest);
+        solution.addEdge(school, nearest);
+        solution.setEdgeWeight(solution.getEdge(school, nearest), nearest.computeDistanceFromSchool());
+        //the vertex that have been added have to be removed from the from the completeGraph
+        //because it represents the set of nodes that aren't yet in the solution
+        completeGraph.removeVertex(nearest);
+
+        //iterate on the rearrangedHamiltonian and add the vertices to the solution while the alpha condition is satisfied
+        double distance = nearest.computeDistanceFromSchool(); //keep the distance computed on the path
+        int i = 1;
+        while (i < rearrangedHamiltonian.size() &&
+                distance + rearrangedHamiltonian.get(i).computeDistance(rearrangedHamiltonian.get(i-1))
+                        < rearrangedHamiltonian.get(i).computeDistanceFromSchool() * alpha
+                ) {
+            solution.addVertex(rearrangedHamiltonian.get(i));
+            solution.addEdge(rearrangedHamiltonian.get(i-1), rearrangedHamiltonian.get(i));
+            solution.setEdgeWeight(solution.getEdge(rearrangedHamiltonian.get(i-1), rearrangedHamiltonian.get(i)),
+                    rearrangedHamiltonian.get(i).computeDistance(rearrangedHamiltonian.get(i-1)));
+            distance += rearrangedHamiltonian.get(i).computeDistance(rearrangedHamiltonian.get(i - 1));
+
+            System.out.println("Node " + rearrangedHamiltonian.get(i).getName()+ " Distance : "+distance + " Directed*alpha: "+ rearrangedHamiltonian.get(i).computeDistanceFromSchool()*alpha);
+            //then the vertices that are added to the solution have to be removed from the completeGraph
+            //because it represents the set of nodes that aren't yet in the solution
+            completeGraph.removeVertex(rearrangedHamiltonian.get(i));
+            i++;
         }
-
-        //create hamiltonian from complete graph
-        List<Vertex> vertexList = HamiltonianCycle.getApproximateOptimalForCompleteGraph(completeGraph);
-
-        // find the verteces nearest to school
-        Vertex nearest = GraphUtility.nearestToSchool(vertexList);
-
-        //split list and rearrange it
-        List<Vertex> beforeList = vertexList.subList(0,vertexList.indexOf(nearest));
-        List<Vertex> afterList = vertexList.subList(vertexList.indexOf(nearest),vertexList.size());
-
-        //now the list starts with the nearest node to the school
-        afterList.addAll(beforeList);
-
-        //compute the first distance to school
-        distance+= afterList.get(0).computeDistanceFromSchool();
-
-        //check alpha value
-        for (int i =1;i<afterList.size();i++){
-            distance=distance+afterList.get(i).computeDistance(afterList.get(i-1));
-            //if does not satisfy alpha
-            if(distance>alpha*afterList.get(i).computeDistanceFromSchool()){
-                //break the list here
-                //go out from the cycle
-                break;
-            }
-            else{
-                vertexListCorrect.add(afterList.get(i));
-                //remove already visited verteces from graph
-                completeGraph.removeVertex(afterList.get(i));
-            }
-        }
-
-        GraphUtility.attachPathToSchool(solution,vertexListCorrect);
-
-        //now the graph is without already visited edge, so check if is empty
-        if(completeGraph.vertexSet().size()==0){
-            return solution;
-        }
-
-        else{
-            solve(completeGraph,alpha);
-        }
-
-
-        return null;
-
-
+        return solve(completeGraph, alpha, ++iteration);
     }
-
-
 }
