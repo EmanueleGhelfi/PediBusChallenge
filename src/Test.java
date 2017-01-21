@@ -29,7 +29,8 @@ public class Test{
         List<Vertex> vertexList = p.getVertexListWithoutSchool();
         SimpleWeightedGraph<Vertex, Arc> graph = GraphUtility.createCompleteGraph(vertexList);
         List<Vertex> hamiltonian = HamiltonianCycle.getApproximateOptimalForCompleteGraph(graph);
-        SimpleWeightedGraph<Vertex, Arc> graph1 = GraphUtility.createCompleteGraph(hamiltonian);
+        hamiltonian.add(new Vertex(0, 0, 0));
+        SimpleWeightedGraph<Vertex, Arc> graph1 = GraphUtility.createCircuit(hamiltonian);
         SolutionFormatter.writeSolution(graph1, ouputPath);
     }
 }

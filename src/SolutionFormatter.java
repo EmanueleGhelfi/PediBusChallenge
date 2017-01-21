@@ -4,7 +4,6 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by emilianogagliardi on 20/01/2017.
