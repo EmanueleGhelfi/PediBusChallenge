@@ -61,4 +61,25 @@ public class GraphUtility {
         }
         return nearest;
     }
+
+    public static SimpleWeightedGraph<Vertex,Arc> attachPathToSchool(SimpleWeightedGraph<Vertex,Arc> graph,
+                                                                     List<Vertex> vertecesToAttach){
+
+        //first create the connections in the graph
+        for (Vertex v : vertecesToAttach) {
+            graph.addVertex(v);
+        }
+
+        vertecesToAttach.add(0,new Vertex(0,0,0));
+
+        for (int i = 0; i < vertecesToAttach.size() - 1; i++) {
+            Arc a = new Arc();
+            Vertex v1 = vertecesToAttach.get(i);
+            Vertex v2 = vertecesToAttach.get(i+1);
+            graph.addEdge(v1, v2, a);
+            graph.setEdgeWeight(a, v1.computeDistance(v2));
+        }
+
+        return graph;
+    }
 }

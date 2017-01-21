@@ -21,7 +21,13 @@ public class Test{
         String inputPath = args[0];
         String ouputPath = args[1];
 
-        littleInterfacesTest(inputPath, ouputPath);
+        //littleInterfacesTest(inputPath, ouputPath);
+
+        Parser p = new Parser(inputPath);
+        List<Vertex> vertexList = p.getVertexListWithoutSchool();
+        SimpleWeightedGraph<Vertex, Arc> graph = GraphUtility.createCompleteGraph(vertexList);
+        SimpleWeightedGraph<Vertex, Arc> graph1  = FirstSolver.solve(graph,p.getAlpha());
+        SolutionFormatter.writeSolution(graph1, ouputPath);
     }
 
     public static void littleInterfacesTest (String inputPath, String ouputPath) {
