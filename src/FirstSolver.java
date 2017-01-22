@@ -5,9 +5,11 @@ import org.jgrapht.alg.HamiltonianCycle;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import parser.Parser;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This algorithm uses an heuristic hamiltonian path algorithm to find the solution: given the graph, it finds an
@@ -80,5 +82,62 @@ public class FirstSolver {
             i++;
         }
         return solve(completeGraph, alpha, ++iteration);
+    }
+
+
+    public SimpleWeightedGraph<Vertex,Arc> solve2(SimpleWeightedGraph<Vertex,Arc> graph,double alpha, int iteration){
+
+        System.out.println(iteration);
+
+        //end of recursion: all nodes are in the solution graph, so the input graph is empty
+        if (graph.vertexSet().size() == 0) return solution;
+
+        ArrayList<Vertex> vertexList = new ArrayList<>(graph.vertexSet());
+        Vertex distantVertex = GraphUtility.getMostDistantFromSchool(vertexList);
+
+        System.out.println("Most distant is "+ distantVertex.getName());
+        ArrayList<Vertex> currentPath = new ArrayList<>();
+        currentPath.add(distantVertex);
+        vertexList.remove(distantVertex);
+        graph.removeVertex(distantVertex);
+        int visited = 0;
+
+        while (visited<vertexList.size()){
+            //get the node with min distance from current path
+            Vertex minDistant = GraphUtility.getMinDistantFrom(currentPath.get(0),vertexList);
+            //if the path is feasible then add the nodes
+            if(GraphUtility.checkPathFeasible(currentPath,minDistant,alpha)){
+                currentPath.add(0,minDistant);
+                vertexList.remove(currentPath.get(0));
+            }
+            else{
+                //remove from vertexlist
+                vertexList.remove(minDistant);
+            }
+
+
+            visited++;
+        }
+
+        //add all vertices in the path to the solution
+        for(int i = 0; i< currentPath.size();i++){
+            solution.addVertex(currentPath.get(i));
+            if(i==0){
+                solution.addEdge(school,currentPath.get(i));
+                solution.setEdgeWeight(solution.getEdge(school,currentPath.get(i)),
+                        GraphUtility.getDistanceFromSchool(currentPath.get(i)));
+            }
+            else{
+                solution.addEdge(currentPath.get(i-1),currentPath.get(i));
+                solution.setEdgeWeight(solution.getEdge(currentPath.get(i-1),currentPath.get(i)),
+                       currentPath.get(i).computeDistance(currentPath.get(i-1)));
+            }
+        }
+
+        graph.removeAllVertices(currentPath);
+
+        iteration++;
+
+        return solve2(graph,alpha,iteration);
     }
 }

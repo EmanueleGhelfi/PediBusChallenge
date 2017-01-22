@@ -2,7 +2,9 @@ package GraphCore;
 
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by emilianogagliardi on 20/01/2017.
@@ -101,5 +103,51 @@ public class GraphUtility {
 
     public static Vertex getSchool(){
         return school;
+    }
+
+    public static Vertex getMostDistantFromSchool(List<Vertex> vertexList) {
+        double maxDistance = getDistanceFromSchool(vertexList.get(0));
+        Vertex mostDistant=vertexList.get(0);
+        for (Vertex v : vertexList) {
+            double d = getDistanceFromSchool(v);
+            if (d > maxDistance) {
+                maxDistance = d;
+                mostDistant = v;
+            }
+        }
+        return mostDistant;
+    }
+
+    public static Vertex getMinDistantFrom(Vertex vertex, ArrayList<Vertex> vertexList) {
+        double minDistance = vertexList.get(0).computeDistance(vertex);
+        Vertex nearest = vertexList.get(0);
+        for (Vertex v : vertexList) {
+            double d = v.computeDistance(vertex);
+            if (d < minDistance) {
+                minDistance = d;
+                nearest = v;
+            }
+        }
+        return nearest;
+
+    }
+
+    public static boolean checkPathFeasible(ArrayList<Vertex> currentPath, Vertex minDistant,double alpha) {
+        double distance = getDistanceFromSchool(minDistant);
+
+        //for every node in the path check alpha condition
+        for(int i = 0; i<currentPath.size();i++){
+            if(i==0){
+                distance+=currentPath.get(0).computeDistance(minDistant);
+            }
+            else{
+                distance+=currentPath.get(i).computeDistance(currentPath.get(i-1));
+            }
+
+            if(distance>alpha*getDistanceFromSchool(currentPath.get(i))){
+                return false;
+            }
+        }
+        return true;
     }
 }
