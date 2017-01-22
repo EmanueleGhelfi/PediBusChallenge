@@ -73,7 +73,7 @@ public class FirstSolver {
                     rearrangedHamiltonian.get(i).computeDistance(rearrangedHamiltonian.get(i-1)));
             distance += rearrangedHamiltonian.get(i).computeDistance(rearrangedHamiltonian.get(i - 1));
 
-            System.out.println("Node " + rearrangedHamiltonian.get(i).getName()+ " Distance : "+distance + " Directed*alpha: "+ rearrangedHamiltonian.get(i).computeDistanceFromSchool()*alpha);
+            System.out.println("Node " + rearrangedHamiltonian.get(i).getName()+ " Distance : "+distance + " Directed*alpha: "+ GraphUtility.getDistanceFromSchool(rearrangedHamiltonian.get(i))*alpha);
             //then the vertices that are added to the solution have to be removed from the completeGraph
             //because it represents the set of nodes that aren't yet in the solution
             completeGraph.removeVertex(rearrangedHamiltonian.get(i));
