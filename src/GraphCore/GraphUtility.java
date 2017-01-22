@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class GraphUtility {
 
+    private static Vertex school;
+
     /*
     Return the complete graph obtained from the list of vertex,
     assigning as weight of arcs the euclidean distance between the
@@ -50,10 +52,10 @@ public class GraphUtility {
     }
 
     public static Vertex nearestToSchool (List<Vertex> vList) {
-        double minDistance = vList.get(0).computeDistanceFromSchool();
+        double minDistance = getDistanceFromSchool(vList.get(0));
         Vertex nearest = vList.get(0);
         for (Vertex v : vList) {
-            double d = v.computeDistanceFromSchool();
+            double d = getDistanceFromSchool(v);
             if (d < minDistance) {
                 minDistance = d;
                 nearest = v;
@@ -84,5 +86,20 @@ public class GraphUtility {
         graph.setEdgeWeight(graph.getEdge(new Vertex(0, 0, 0), vertecesToAttach.get(0)), vertecesToAttach.get(0).computeDistanceFromSchool());
 
         return graph;
+    }
+
+    public static void setSchool(Vertex v){
+        school=v;
+    }
+
+
+    public static double getDistanceFromSchool(Vertex v1){
+
+        return v1.computeDistance(school);
+
+    }
+
+    public static Vertex getSchool(){
+        return school;
     }
 }

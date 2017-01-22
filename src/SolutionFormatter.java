@@ -13,12 +13,10 @@ import java.util.ArrayList;
 public class SolutionFormatter {
 
     public static void writeSolution (SimpleWeightedGraph graph, String destinationPath) {
-        DijkstraShortestPath<Vertex, Arc> dijkstraShortestPath = new DijkstraShortestPath(graph);
         try{
             PrintWriter writer = new PrintWriter(destinationPath, "UTF-8");
             ArrayList<Vertex> vertexList = new ArrayList<Vertex>(graph.vertexSet());
             for (int i = 0; i < vertexList.size(); i++) {
-                System.out.println("Shortest :Node "+vertexList.get(i).getName()+" "+ dijkstraShortestPath.getPath(vertexList.get(i),new Vertex(0,0,0)).getWeight());
                 for (int j = i + 1; j < vertexList.size(); j++) {
                     Vertex v1 = (Vertex) vertexList.get(i);
                     Vertex v2 = (Vertex) vertexList.get(j);

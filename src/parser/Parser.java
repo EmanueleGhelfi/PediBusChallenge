@@ -23,6 +23,7 @@ public class Parser {
             e.printStackTrace();
         }
         try {
+            System.out.println("Opening "+datPath);
             ampl.readData(datPath);
         } catch (IOException e) {
             System.out.println("unable to find input path");
@@ -54,6 +55,14 @@ public class Parser {
             System.out.println("Vertex "+ v);
         }
         return vertices;
+    }
+
+
+    public Vertex getSchool(){
+        Parameter coordX = ampl.getParameter("coordX");
+        Parameter coordY = ampl.getParameter("coordY");
+        Vertex v = new Vertex(0,(double) coordX.get(0),(double)coordY.get(0));
+        return v;
     }
 
     //TODO a method that parse dangerousness

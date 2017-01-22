@@ -24,7 +24,7 @@ public class FirstSolver {
 
     public FirstSolver() {
          solution = new SimpleWeightedGraph<Vertex, Arc>(Arc.class);
-         school = new Vertex(0, 0, 0);
+        school= GraphUtility.getSchool();
          solution.addVertex(school);
     }
 
@@ -55,17 +55,17 @@ public class FirstSolver {
         //Add the first vertex to the solution, it certainly satisfies the alpha condition if alpha > 1
         solution.addVertex(nearest);
         solution.addEdge(school, nearest);
-        solution.setEdgeWeight(solution.getEdge(school, nearest), nearest.computeDistanceFromSchool());
+        solution.setEdgeWeight(solution.getEdge(school, nearest), GraphUtility.getDistanceFromSchool(nearest));
         //the vertex that have been added have to be removed from the from the completeGraph
         //because it represents the set of nodes that aren't yet in the solution
         completeGraph.removeVertex(nearest);
 
         //iterate on the rearrangedHamiltonian and add the vertices to the solution while the alpha condition is satisfied
-        double distance = nearest.computeDistanceFromSchool(); //keep the distance computed on the path
+        double distance = GraphUtility.getDistanceFromSchool(nearest); //keep the distance computed on the path
         int i = 1;
         while (i < rearrangedHamiltonian.size() &&
                 distance + rearrangedHamiltonian.get(i).computeDistance(rearrangedHamiltonian.get(i-1))
-                        < rearrangedHamiltonian.get(i).computeDistanceFromSchool() * alpha
+                        < GraphUtility.getDistanceFromSchool(rearrangedHamiltonian.get(i)) * alpha
                 ) {
             solution.addVertex(rearrangedHamiltonian.get(i));
             solution.addEdge(rearrangedHamiltonian.get(i-1), rearrangedHamiltonian.get(i));
