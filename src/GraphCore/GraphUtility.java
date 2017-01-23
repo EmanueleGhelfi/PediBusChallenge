@@ -118,7 +118,7 @@ public class GraphUtility {
         return mostDistant;
     }
 
-    public static Vertex getMinDistantFrom(Vertex vertex, ArrayList<Vertex> vertexList) {
+    public static Vertex getMinDistantFrom(Vertex vertex, List<Vertex> vertexList) {
         double minDistance = vertexList.get(0).computeDistance(vertex);
         Vertex nearest = vertexList.get(0);
         for (Vertex v : vertexList) {
@@ -132,7 +132,7 @@ public class GraphUtility {
 
     }
 
-    public static boolean checkPathFeasible(ArrayList<Vertex> currentPath, Vertex minDistant,double alpha) {
+    public static boolean checkPathFeasible(List<Vertex> currentPath, Vertex minDistant,double alpha) {
         double distance = getDistanceFromSchool(minDistant);
 
         //for every node in the path check alpha condition
