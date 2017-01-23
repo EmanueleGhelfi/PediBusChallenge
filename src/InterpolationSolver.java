@@ -24,11 +24,11 @@ public class InterpolationSolver {
 
     /*
         A "star tree" is a tree where all the branches outgoing from the root are paths
-         */
+    */
     public SimpleWeightedGraph<Vertex, Arc> solve(SimpleWeightedGraph<Vertex, Arc> starTree, double alpha) {
         //obtain a list containing all the paths outgoing from s
         List<ArrayList<Vertex>> allPath = allPathsFromS(starTree);
-        //compute the differences between each pair of path
+        //compute the differences between the angular coefficient of fitline corresponding to each pair of path
     }
 
     private List<ArrayList<Vertex>> allPathsFromS (SimpleWeightedGraph<Vertex, Arc> starTree) {
@@ -36,9 +36,9 @@ public class InterpolationSolver {
     }
 
     /*
-                - sum{i in V} (Xi - Xs)*(Ys-Yi)
-        m =     --------------------------------
-                    sum{i in V} (Xi - Xs)^2
+             - sum{i in V} (Xi - Xs)*(Ys-Yi)
+        m =  --------------------------------
+                 sum{i in V} (Xi - Xs)^2
      */
     private double fitlineThroughS_angularCoefficient (List<Vertex> vertexList) {
         List<Double> numeratorSummationElements = new ArrayList<>(vertexList.size());
