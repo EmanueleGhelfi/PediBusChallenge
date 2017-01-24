@@ -6,6 +6,7 @@ import org.jgrapht.alg.shortestpath.AStarShortestPath;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,13 +33,24 @@ public class InterpolationSolver {
         //obtain a list containing all the paths outgoing from s
         List<ArrayList<Vertex>> allPaths = allPathsFromS(starTree);
 
-        //compute the differences between the adjusted angular coefficient of fitline corresponding to each pair of path
-        //TODO there is the need to bind the differences to the corresponding paths couples
-        List<Double> adjustedDifferences = adjustedCoefficientDifferences(allPaths);
+        /*
+        compute the differences between the angle fitline corresponding to each pair of path
+        considering also the directions, oin order to avoid situation where the fitline coefficient are similar
+        but the paths goes in opposite directions
+         */
+        HashMap<PathCouple, Double> angularDifferences = angularDifferences(allPaths);
 
-        //try to construct a path from two path, while a feasible one is found (check in growing order)
+        /*
+        try to construct a path from two path, while a feasible one is found (check in growing order)
+        if none is found the algorithm terminates (recursion terminates)
+        */
+        boolean found = false;
+        while (!angularDifferences.isEmpty()) {
+            PathCouple couple = getNearestCouple(angularDifferences);
+            angularDifferences.remove(couple);
+            //try to construct a unique path from the two in the couple
 
-        //if none is found the algorithm terminates (recursion terminates)
+        }
 
         //if one is found recursive call with the new solution
     }
@@ -53,7 +65,7 @@ public class InterpolationSolver {
             if (starTree.degreeOf(v) > 1)
                 vertexList.remove(v);
         }
-        //TODO maybe it is better to use somethig else
+        //TODO maybe it is better to use something else
         // there is no need of a good heuristic, because there is only a path. h(v) = 0 for each v is
         //certainly admissible
         AStarShortestPath<Vertex, Arc> pathFinder = new AStarShortestPath<>(starTree, new AStarAdmissibleHeuristic<Vertex>() {
@@ -70,6 +82,31 @@ public class InterpolationSolver {
             paths.add(path);
         }
         return paths;
+    }
+
+    private HashMap<PathCouple, Double> angularDifferences (List<ArrayList<Vertex>> allPaths) {
+        HashMap<PathCouple, Double> adjustedDifferences = new HashMap<>();
+        for (int i = 0; i < allPaths.size(); i++) {
+            for (int j = i + 1; j < allPaths.size(); j++) {
+                double angle = Math.abs(adjustedArctanAngle(allPaths.get(i)) - adjustedArctanAngle(allPaths.get(j)));
+                adjustedDifferences.put(new PathCouple(allPaths.get(i), allPaths.get(j)), angle);
+            }
+        }
+        return adjustedDifferences;
+    }
+
+    /*
+    it uses arctan and adjust it to compute the angle. There is the assumption that the first node of the path in the
+    list is a leaf (the most distant from the school)
+     */
+    //TODO I'm not sure about this method
+    private double adjustedArctanAngle (List<Vertex> path) {
+        double m = fitlineThroughS_angularCoefficient(path);
+        double angle = Math.atan(m);
+        if (path.get(path.size()-1).getCoordX() < school.getCoordX()) {
+            angle += Math.PI;
+        }
+        return angle;
     }
 
     /*
@@ -97,25 +134,47 @@ public class InterpolationSolver {
         return numerator/denominator;
     }
 
-    private List<Double> adjustedCoefficientDifferences (List<ArrayList<Vertex>> allPaths) {
-        List<Double> adjustedDifferences = new ArrayList<>();
-        for (int i = 0; i < allPaths.size(); i++) {
-            for (int j = i + 1; j < allPaths.size(); j++) {
-                adjustedDifferences.add(adjustedCoefficientDifference(allPaths.get(i), allPaths.get(j)));
-            }
-        }
-        return adjustedDifferences;
-    }
-
-    private double adjustedCoefficientDifference (List<Vertex> path1, List<Vertex> path2) {
-        //TODO need to avoid situation in which the m are similar but the paths have opposite directions
-    }
-
     private double sumAll (List<Double> list) {
         double sum = 0;
         for (Double d : list) {
             sum += d;
         }
         return sum;
+    }
+
+    private PathCouple getNearestCouple (HashMap<PathCouple, Double> differencesMap) {
+        double min = Double.MAX_VALUE;
+        PathCouple nearest = null;
+        for (PathCouple couple : differencesMap.keySet()){
+            double diff = differencesMap.get(couple);
+            if (diff <= min) {
+                min = diff;
+                nearest = couple;
+            }
+        }
+        return nearest;
+    }
+
+    private List<Vertex> constructPath (List<Vertex> path1, List<Vertex> path2) {
+        //TODO construct the path picking up each time the nearest to the school
+    }
+}
+
+class PathCouple {
+    private List<Vertex> path1;
+    private List<Vertex> path2;
+
+    public List<Vertex> getPath1() {
+        return path1;
+    }
+
+    public List<Vertex> getPath2() {
+        return path2;
+    }
+
+    public PathCouple(List<Vertex> path1, List<Vertex> path2) {
+
+        this.path1 = path1;
+        this.path2 = path2;
     }
 }
