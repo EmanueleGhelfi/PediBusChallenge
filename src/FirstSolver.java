@@ -193,4 +193,103 @@ public class FirstSolver {
 
         return solve3(graph, alpha, iteration);
     }
+
+
+    public SimpleWeightedGraph<Vertex, Arc> solveWithLocal(SimpleWeightedGraph<Vertex, Arc> graph, double alpha, int iteration) {
+        SimpleWeightedGraph<Vertex,Arc> simpleWeightedGraph = solve3(graph,alpha,iteration);
+
+        // arcs outgoing from school
+        ArrayList<Arc> outgoingArc = new ArrayList<>(simpleWeightedGraph.edgesOf(school));
+        //all vertices connected to the school
+        ArrayList<Vertex> vertices = new ArrayList<>();
+        //all path not containing the school
+        List<ArrayList<Vertex>> paths = new ArrayList<>();
+        for(Arc arc: outgoingArc){
+            Vertex vertex = graph.getEdgeTarget(arc);
+            if(!vertex.equals(school)){
+                vertices.add(vertex);
+            }
+        }
+
+        System.out.println("outgoing : "+ outgoingArc.size()+" vertices "+vertices.size());
+
+
+        //find paths
+        int i =0;
+        for(Vertex v: vertices){
+            paths.add(new ArrayList<>());
+            paths.get(i).add(v);
+            for(int j = 0; j< paths.get(i).size();j++){
+                ArrayList<Arc> currentArcs = new ArrayList<>(simpleWeightedGraph.edgesOf(paths.get(i).get(j)));
+                for(Arc arc: currentArcs){
+                    Vertex vertex = graph.getEdgeTarget(arc);
+                    if(!vertex.equals(paths.get(i).get(j))){
+                        paths.get(i).add(vertex);
+                    }
+                }
+            }
+            System.out.println("length : "+paths.get(i).size());
+            i++;
+        }
+
+        System.out.println("Paths : "+paths.size());
+
+
+        //now the paths array contains all paths from school
+        int changes = 0;
+        do{
+            changes=0;
+            for(int j = 0; j< paths.size();j++){
+                //here we get the path j-th, check for all other path if is possible to add a node in path j
+                //for other paths with more nodes
+                for(int k = 0;k<paths.size();k++){
+                    // if k-th paths is not equal to j-th and has a lower number of nodes
+                    if(paths.get(j).size()>paths.get(k).size()){
+                        // for every node in k-th path
+                        for(int m = 0; m<paths.get(k).size();m++){
+                            Vertex vertex = paths.get(k).get(m);
+                            // check if it's possible to add it in some position of j-th path
+                            for(int l = paths.get(j).size()-1;l>=0;l--){
+                                if(GraphUtility.checkPathFeasible((ArrayList<Vertex>)paths.get(j).clone(),vertex,alpha,l)){
+                                    System.out.println("CHANGE!!!!");
+                                    paths.get(j).add(l,vertex);
+                                    paths.get(k).remove(m);
+                                    System.out.println("Added path length : "+paths.get(j).size());
+                                    System.out.println("removed path length "+paths.get(k).size());
+                                    changes++;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+        }while (changes!=0);
+
+        solution = new SimpleWeightedGraph<Vertex, Arc>(Arc.class);
+        solution.addVertex(school);
+        //add all vertices in the path to the solution
+        for(ArrayList<Vertex> path: paths){
+            for (int j = 0; j < path.size(); j++) {
+                solution.addVertex(path.get(j));
+                if (j == 0) {
+                    solution.addEdge(school, path.get(j));
+                    solution.setEdgeWeight(solution.getEdge(school, path.get(j)),
+                            GraphUtility.getDistanceFromSchool(path.get(j)));
+                } else {
+                    solution.addEdge(path.get(j - 1), path.get(j));
+                    solution.setEdgeWeight(solution.getEdge(path.get(j - 1), path.get(j)),
+                            path.get(j).computeDistance(path.get(j - 1)));
+                }
+            }
+        }
+
+        return solution;
+    }
+
+
+
 }

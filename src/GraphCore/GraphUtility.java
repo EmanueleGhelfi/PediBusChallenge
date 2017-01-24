@@ -150,4 +150,25 @@ public class GraphUtility {
         }
         return true;
     }
+
+    //check if the path with vertex in pos position is feasible.
+    public static boolean checkPathFeasible(ArrayList<Vertex> path, Vertex vertex, double alpha, int position) {
+        List<Vertex> pathCopy = (ArrayList<Vertex>) path.clone();
+        int distance = 0;
+        pathCopy.add(position,vertex);
+        //for every node in the path check alpha condition
+        for(int i = 0; i<pathCopy.size();i++){
+            if(i==0){
+                distance+=getDistanceFromSchool(pathCopy.get(i));
+            }
+            else{
+                distance+=pathCopy.get(i).computeDistance(pathCopy.get(i-1));
+            }
+
+            if(distance>alpha*getDistanceFromSchool(pathCopy.get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
 }

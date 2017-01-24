@@ -29,7 +29,7 @@ public class Test{
         //get school from parser and set in utility
         GraphUtility.setSchool(p.getSchool());
         FirstSolver s = new FirstSolver();
-        SimpleWeightedGraph<Vertex, Arc> graph1  = s.solve3(graph,p.getAlpha(),0);
+        SimpleWeightedGraph<Vertex, Arc> graph1  = s.solveWithLocal(graph,p.getAlpha(),0);
         SolutionFormatter.writeSolution(graph1, ouputPath);
     }
 
