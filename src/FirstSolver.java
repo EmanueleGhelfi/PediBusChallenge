@@ -251,7 +251,6 @@ public class FirstSolver {
                             // check if it's possible to add it in some position of j-th path
                             for(int l = paths.get(j).size()-1;l>=0;l--){
                                 if(GraphUtility.checkPathFeasible((ArrayList<Vertex>)paths.get(j).clone(),vertex,alpha,l)){
-                                    System.out.println("CHANGE!!!!");
                                     paths.get(j).add(l,vertex);
                                     paths.get(k).remove(m);
                                     System.out.println("Added path length : "+paths.get(j).size());
