@@ -1,16 +1,11 @@
+package solvers;
+
 import GraphCore.Arc;
 import GraphCore.GraphUtility;
 import GraphCore.Vertex;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-import org.jgrapht.alg.HamiltonianCycle;
 import org.jgrapht.graph.SimpleWeightedGraph;
-import parser.Parser;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This algorithm uses an heuristic hamiltonian path algorithm to find the solution: given the graph, it finds an
@@ -21,21 +16,18 @@ import java.util.Set;
  * and the verification of the alpha-condition is applied another time. The algorithm iterates in this way while the
  * alpha condition is satisfied and the vertices are all connected.
  */
-public class FirstSolver {
+public class MaxDistanceSolver implements SolverInterface {
     private SimpleWeightedGraph<Vertex, Arc> solution;
     private Vertex school;
 
-    public FirstSolver() {
+    public MaxDistanceSolver() {
         solution = new SimpleWeightedGraph<Vertex, Arc>(Arc.class);
         school = GraphUtility.getSchool();
         solution.addVertex(school);
     }
 
-    /**
-     * @param completeGraph graph without school, it represents the set of the vertices that aren't yet in the sol
-     * @param alpha
-     * @return
-     */
+    /* OLD VERSION */
+    /*
     public SimpleWeightedGraph<Vertex, Arc> solve(SimpleWeightedGraph<Vertex, Arc> completeGraph,
                                                   double alpha, int iteration) {
         System.out.println(completeGraph.vertexSet().size());
@@ -84,10 +76,11 @@ public class FirstSolver {
         return solve(completeGraph, alpha, ++iteration);
     }
 
+    */
 
-    public SimpleWeightedGraph<Vertex, Arc> solve2(SimpleWeightedGraph<Vertex, Arc> graph, double alpha, int iteration) {
 
-        System.out.println(iteration);
+    @Override
+    public SimpleWeightedGraph<Vertex, Arc> solve(SimpleWeightedGraph<Vertex, Arc> graph, double alpha, int iteration) {
 
         //end of recursion: all nodes are in the solution graph, so the input graph is empty
         if (graph.vertexSet().size() == 0) return solution;
@@ -95,7 +88,6 @@ public class FirstSolver {
         ArrayList<Vertex> vertexList = new ArrayList<>(graph.vertexSet());
         Vertex distantVertex = GraphUtility.getMostDistantFromSchool(vertexList);
 
-        System.out.println("Most distant is " + distantVertex.getName());
         ArrayList<Vertex> currentPath = new ArrayList<>();
         currentPath.add(distantVertex);
         vertexList.remove(distantVertex);
@@ -132,124 +124,51 @@ public class FirstSolver {
 
         iteration++;
 
-        return solve2(graph, alpha, iteration);
+        return solve(graph, alpha, iteration);
     }
 
 
-    public SimpleWeightedGraph<Vertex, Arc> solve3(SimpleWeightedGraph<Vertex, Arc> graph, double alpha, int iteration) {
+    /* //todo: implement
+    public SimpleWeightedGraph<Vertex, Arc> solveWithLocal2(SimpleWeightedGraph<Vertex, Arc> graph, double alpha, int iteration) {
 
-        //end of recursion: all nodes are in the solution graph, so the input graph is empty
-        if (graph.vertexSet().size() == 0) return solution;
-
-        //construct the list of paths from a node to the school, trying to maximize the numer
-        //of nodes chosing the min distance nodes during the path construction
-        List<ArrayList<Vertex>> paths = new ArrayList<>();
-        List<Vertex> vertexList = new ArrayList<>(graph.vertexSet());
-        int i = 0; //at the i iteration i'm creating the i-th path
-        while (!vertexList.isEmpty()) {
-            Vertex v = GraphUtility.getMostDistantFromSchool(vertexList);
-            vertexList.remove(v);
-            List<Vertex> notExplored = new ArrayList<>(vertexList);
-            paths.add(new ArrayList<>());
-            paths.get(i).add(v);
-            while (!notExplored.isEmpty()) {
-                Vertex currentV = GraphUtility.getMinDistantFrom(paths.get(i).get(0), notExplored);
-                if (GraphUtility.checkPathFeasible(paths.get(i), currentV, alpha)) {
-                    paths.get(i).add(0, currentV);
-                }
-                notExplored.remove(currentV);
-            }
-            i++;
-        }
-        //select the path with the highest number of nodes
-        //TODO modify: select all the best in term of nodes number, the select the least dangerous
-        int max = 0;
-        List<Vertex> maxNodesPath = null;
-        for (List<Vertex> path : paths) {
-            if (path.size() > max) {
-                max = path.size();
-                maxNodesPath = path;
-            }
-        }
-
-        //add all vertices in the path to the solution
-        for (int j = 0; j < maxNodesPath.size(); j++) {
-            solution.addVertex(maxNodesPath.get(j));
-            if (j == 0) {
-                solution.addEdge(school, maxNodesPath.get(j));
-                solution.setEdgeWeight(solution.getEdge(school, maxNodesPath.get(j)),
-                        GraphUtility.getDistanceFromSchool(maxNodesPath.get(j)));
-            } else {
-                solution.addEdge(maxNodesPath.get(j - 1), maxNodesPath.get(j));
-                solution.setEdgeWeight(solution.getEdge(maxNodesPath.get(j - 1), maxNodesPath.get(j)),
-                        maxNodesPath.get(j).computeDistance(maxNodesPath.get(j - 1)));
-            }
-        }
-
-        graph.removeAllVertices(maxNodesPath);
-        System.out.println("the length of the just find path is" + maxNodesPath.size());
-
-        iteration++;
-
-        return solve3(graph, alpha, iteration);
-    }
-
-
-    public SimpleWeightedGraph<Vertex, Arc> solveWithLocal(SimpleWeightedGraph<Vertex, Arc> graph, double alpha, int iteration) {
-        SimpleWeightedGraph<Vertex,Arc> simpleWeightedGraph = solve3(graph,alpha,iteration);
-
-        // arcs outgoing from school
-        ArrayList<Arc> outgoingArc = new ArrayList<>(simpleWeightedGraph.edgesOf(school));
         //all vertices connected to the school
         ArrayList<Vertex> vertices = new ArrayList<>();
         //all path not containing the school
         List<ArrayList<Vertex>> paths = new ArrayList<>();
-        for(Arc arc: outgoingArc){
-            Vertex vertex = graph.getEdgeTarget(arc);
-            if(!vertex.equals(school)){
-                vertices.add(vertex);
-            }
-        }
-
-        System.out.println("outgoing : "+ outgoingArc.size()+" vertices "+vertices.size());
-
+        HashMap<PathCouple,Double> hashmapPath = new HashMap<>();
+        InterpolationSolver interpolationSolver = new InterpolationSolver(school);
 
         //find paths
         int i =0;
-        for(Vertex v: vertices){
+        for(Vertex v: graph.vertexSet()){
             paths.add(new ArrayList<>());
             paths.get(i).add(v);
-            for(int j = 0; j< paths.get(i).size();j++){
-                ArrayList<Arc> currentArcs = new ArrayList<>(simpleWeightedGraph.edgesOf(paths.get(i).get(j)));
-                for(Arc arc: currentArcs){
-                    Vertex vertex = graph.getEdgeTarget(arc);
-                    if(!vertex.equals(paths.get(i).get(j))){
-                        paths.get(i).add(vertex);
-                    }
-                }
-            }
             System.out.println("length : "+paths.get(i).size());
             i++;
         }
 
+
         System.out.println("Paths : "+paths.size());
+
+        Collections.shuffle(paths);
 
 
         //now the paths array contains all paths from school
         int changes = 0;
         do{
+            hashmapPath = interpolationSolver.angularDifferences(paths);
             changes=0;
             for(int j = 0; j< paths.size();j++){
                 //here we get the path j-th, check for all other path if is possible to add a node in path j
                 //for other paths with more nodes
                 for(int k = 0;k<paths.size();k++){
                     // if k-th paths is not equal to j-th and has a lower number of nodes
-                    if(paths.get(j).size()>paths.get(k).size()){
+                    if(j!=k && paths.get(j).size()>=paths.get(k).size()){
                         // for every node in k-th path
                         for(int m = 0; m<paths.get(k).size();m++){
                             Vertex vertex = paths.get(k).get(m);
                             // check if it's possible to add it in some position of j-th path
-                            for(int l = paths.get(j).size()-1;l>=0;l--){
+                            for(int l=paths.get(j).size(); l>=0;l--){
                                 if(GraphUtility.checkPathFeasible((ArrayList<Vertex>)paths.get(j).clone(),vertex,alpha,l)){
                                     paths.get(j).add(l,vertex);
                                     paths.get(k).remove(m);
@@ -288,7 +207,6 @@ public class FirstSolver {
 
         return solution;
     }
-
-
+    */
 
 }

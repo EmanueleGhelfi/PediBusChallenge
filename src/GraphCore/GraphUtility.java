@@ -85,7 +85,7 @@ public class GraphUtility {
         }
 
         graph.addEdge(new Vertex(0, 0, 0), vertecesToAttach.get(0));
-        graph.setEdgeWeight(graph.getEdge(new Vertex(0, 0, 0), vertecesToAttach.get(0)), vertecesToAttach.get(0).computeDistanceFromSchool());
+        graph.setEdgeWeight(graph.getEdge(new Vertex(0, 0, 0), vertecesToAttach.get(0)), getDistanceFromSchool(vertecesToAttach.get(0)));
 
         return graph;
     }
@@ -138,7 +138,7 @@ public class GraphUtility {
         //for every node in the path check alpha condition
         for(int i = 0; i<currentPath.size();i++){
             if(i==0){
-                distance+=currentPath.get(0).computeDistance(minDistant);
+                distance+=getDistanceFromSchool(currentPath.get(i));
             }
             else{
                 distance+=currentPath.get(i).computeDistance(currentPath.get(i-1));
@@ -154,7 +154,7 @@ public class GraphUtility {
     //check if the path with vertex in pos position is feasible.
     public static boolean checkPathFeasible(ArrayList<Vertex> path, Vertex vertex, double alpha, int position) {
         List<Vertex> pathCopy = (ArrayList<Vertex>) path.clone();
-        int distance = 0;
+        double distance = 0;
         pathCopy.add(position,vertex);
         //for every node in the path check alpha condition
         for(int i = 0; i<pathCopy.size();i++){
@@ -165,6 +165,96 @@ public class GraphUtility {
                 distance+=pathCopy.get(i).computeDistance(pathCopy.get(i-1));
             }
 
+            if(distance>alpha*getDistanceFromSchool(pathCopy.get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static SimpleWeightedGraph<Vertex, Arc> addSchooltoGraph(SimpleWeightedGraph<Vertex, Arc> graph) {
+        graph.addVertex(school);
+        for(Vertex vertex: graph.vertexSet()){
+            if(!vertex.equals(school)){
+                graph.addEdge(school,vertex);
+            }
+        }
+        return graph;
+    }
+
+    public static int computeLeaf(SimpleWeightedGraph<Vertex, Arc> graph) {
+
+        int leaves=0;
+        for(Vertex v : graph.vertexSet()){
+            if(graph.degreeOf(v)==1)
+                leaves++;
+        }
+
+        return leaves;
+    }
+
+
+    public static int computeDangerousness(SimpleWeightedGraph<Vertex,Arc> graph){
+        int dang = 0;
+
+        //TODO: compute this
+        List<ArrayList<Vertex>> paths = GraphUtility.computePaths(graph);
+
+        for (ArrayList<Vertex> path :paths){
+            for(int i = 0; i<path.size();i++){
+                if(i==0){
+
+                }
+            }
+        }
+        return 0;
+
+    }
+
+    public static List<ArrayList<Vertex>> computePaths(SimpleWeightedGraph<Vertex, Arc> graph) {
+        // arcs outgoing from school
+        ArrayList<Arc> outgoingArc = new ArrayList<>(graph.edgesOf(school));
+        //all vertices connected to the school
+        ArrayList<Vertex> vertices = new ArrayList<>();
+        //all path not containing the school
+        List<ArrayList<Vertex>> paths = new ArrayList<>();
+        for(Arc arc: outgoingArc){
+            Vertex vertex = graph.getEdgeTarget(arc);
+            if(!vertex.equals(school)){
+                vertices.add(vertex);
+            }
+        }
+
+        //find paths
+        int i =0;
+        for(Vertex v: vertices){
+            paths.add(new ArrayList<>());
+            paths.get(i).add(v);
+            for(int j = 0; j< paths.get(i).size();j++){
+                ArrayList<Arc> currentArcs = new ArrayList<>(graph.edgesOf(paths.get(i).get(j)));
+                for(Arc arc: currentArcs){
+                    Vertex vertex = graph.getEdgeTarget(arc);
+                    if(!vertex.equals(paths.get(i).get(j))){
+                        paths.get(i).add(vertex);
+                    }
+                }
+            }
+            i++;
+        }
+
+        return paths;
+
+    }
+
+
+    public static boolean checkPathFeasible(List<Vertex> currentPath,double alpha) {
+        double distance=0;
+        ArrayList<Vertex> pathCopy = new ArrayList<>(currentPath);
+        if(!pathCopy.contains(school)){
+            pathCopy.add(0,school);
+        }
+        for(int i = 1; i<pathCopy.size();i++){
+            distance+=pathCopy.get(i).computeDistance(pathCopy.get(i-1));
             if(distance>alpha*getDistanceFromSchool(pathCopy.get(i))){
                 return false;
             }

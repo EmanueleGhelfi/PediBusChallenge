@@ -14,10 +14,10 @@ import java.util.List;
 public class Parser {
     private AMPL ampl;
 
-    public Parser (String datPath) {
+    public Parser (String datPath, String modelPath) {
         ampl = new AMPL();
         try {
-            ampl.read(Constants.MOD_PATH);
+            ampl.read(modelPath);
         } catch (IOException e) {
             System.out.println("unable to open fake model, needed to parse the .dat with AMPL");
             e.printStackTrace();
@@ -33,7 +33,6 @@ public class Parser {
 
     public double getAlpha() {
         Double d = (double) ampl.getValue("alpha");
-        System.out.println("ALPHA :"+d);
         return d;
     }
 
@@ -47,12 +46,9 @@ public class Parser {
         int n = getN();
         Parameter coordX = ampl.getParameter("coordX");
         Parameter coordY = ampl.getParameter("coordY");
-        System.out.println(coordX);
         for (int i = 1; i <= n; i ++) {
-            System.out.println("Vertex "+ i+" "+ coordX.get(i)+" "+ coordY.get(i));
             Vertex v = new Vertex(i, (double) coordX.get(i), (double) coordY.get(i));
             vertices.add(v);
-            System.out.println("Vertex "+ v);
         }
         return vertices;
     }

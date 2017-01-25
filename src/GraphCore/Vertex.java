@@ -32,10 +32,6 @@ public class Vertex {
         return Math.sqrt(Math.pow(this.coordX - v.coordX, 2) + Math.pow(this.coordY - v.coordY, 2));
     }
 
-    //compute euclidean distance from school to the vertex
-    public double computeDistanceFromSchool () {
-        return this.computeDistance(new Vertex(0, 0, 0));
-    }
 
     @Override
     public String toString() {

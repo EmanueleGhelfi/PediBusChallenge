@@ -53,6 +53,7 @@ public class InterpolationSolver {
         }
 
         //if one is found recursive call with the new solution
+        return null;
     }
 
     /*
@@ -84,7 +85,7 @@ public class InterpolationSolver {
         return paths;
     }
 
-    private HashMap<PathCouple, Double> angularDifferences (List<ArrayList<Vertex>> allPaths) {
+    public HashMap<PathCouple, Double> angularDifferences (List<ArrayList<Vertex>> allPaths) {
         HashMap<PathCouple, Double> adjustedDifferences = new HashMap<>();
         for (int i = 0; i < allPaths.size(); i++) {
             for (int j = i + 1; j < allPaths.size(); j++) {
@@ -157,6 +158,7 @@ public class InterpolationSolver {
 
     private List<Vertex> constructPath (List<Vertex> path1, List<Vertex> path2) {
         //TODO construct the path picking up each time the nearest to the school
+        return null;
     }
 }
 
