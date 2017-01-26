@@ -43,6 +43,7 @@ public class Test{
         SimpleWeightedGraph<Vertex, Arc> graph = GraphUtility.createCompleteGraph(vertexList);
         //get school from parser and set in utility
         GraphUtility.setSchool(p.getSchool());
+        GraphUtility.setMapDangerousness(p.getDangerousness());
         //MaxDistanceSolver s = new MaxDistanceSolver();
         //SimpleWeightedGraph<Vertex, Arc> graph1  = s.solve((SimpleWeightedGraph<Vertex,Arc>)graph.clone(),p.getAlpha(),0);
         try {
@@ -103,13 +104,13 @@ public class Test{
 
         // compare all solutions
         int minLeaf = GraphUtility.computeLeaf(solutions.get(0));
-        int dangerousness = GraphUtility.computeDangerousness(solutions.get(0));
+        double dangerousness = GraphUtility.computeDangerousness(solutions.get(0));
         // the real solution
         SimpleWeightedGraph<Vertex,Arc> solution = solutions.get(0);
 
         for(SimpleWeightedGraph<Vertex,Arc> currentGraph: solutions){
             int leaves = GraphUtility.computeLeaf(currentGraph);
-            int dang = GraphUtility.computeDangerousness(currentGraph);
+            double dang = GraphUtility.computeDangerousness(currentGraph);
             if(leaves<minLeaf){
                 solution = currentGraph;
                 minLeaf =  leaves;
@@ -125,6 +126,7 @@ public class Test{
         }
 
         System.out.println("Leaf of solution: "+ GraphUtility.computeLeaf(solution));
+        System.out.println("Dangerousness of sol "+ GraphUtility.computeDangerousness(solution));
 
         for(List<Vertex>path: GraphUtility.computePaths(solution)){
             if(!GraphUtility.checkPathFeasible(path,alpha)){

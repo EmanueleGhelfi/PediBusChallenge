@@ -3,8 +3,8 @@ package GraphCore;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by emilianogagliardi on 20/01/2017.
@@ -12,12 +12,18 @@ import java.util.Set;
 public class GraphUtility {
 
     private static Vertex school;
+    private static HashMap<VertexCouple,Double> mapDangerousness = new HashMap<>();
+
+
+    public static void setMapDangerousness(HashMap<VertexCouple, Double> mapDang) {
+        mapDangerousness = mapDang;
+    }
 
     /*
-    Return the complete graph obtained from the list of vertex,
-    assigning as weight of arcs the euclidean distance between the
-    two connected nodes
-    */
+        Return the complete graph obtained from the list of vertex,
+        assigning as weight of arcs the euclidean distance between the
+        two connected nodes
+        */
     public static SimpleWeightedGraph<Vertex, Arc> createCompleteGraph (List<Vertex> vertexList) {
         SimpleWeightedGraph<Vertex, Arc> graph = new SimpleWeightedGraph<Vertex, Arc>(Arc.class);
         for (Vertex v : vertexList) {
@@ -194,23 +200,28 @@ public class GraphUtility {
     }
 
 
-    public static int computeDangerousness(SimpleWeightedGraph<Vertex,Arc> graph){
-        int dang = 0;
+    public static double computeDangerousness(SimpleWeightedGraph<Vertex,Arc> graph){
+        double dang = 0;
 
-        //TODO: compute this
         List<ArrayList<Vertex>> paths = GraphUtility.computePaths(graph);
 
         for (ArrayList<Vertex> path :paths){
             for(int i = 0; i<path.size();i++){
+                VertexCouple vertexCouple;
                 if(i==0){
-
+                    vertexCouple = new VertexCouple(school,path.get(i));
                 }
+                else{
+                    vertexCouple = new VertexCouple(path.get(i-1),path.get(i));
+                }
+                dang+= mapDangerousness.get(vertexCouple);
             }
         }
-        return 0;
+        return dang;
 
     }
 
+    /** this method returns all path without school */
     public static List<ArrayList<Vertex>> computePaths(SimpleWeightedGraph<Vertex, Arc> graph) {
         // arcs outgoing from school
         ArrayList<Arc> outgoingArc = new ArrayList<>(graph.edgesOf(school));

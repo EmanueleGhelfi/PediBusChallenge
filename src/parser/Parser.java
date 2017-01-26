@@ -1,11 +1,13 @@
 package parser;
 
 import GraphCore.Vertex;
+import GraphCore.VertexCouple;
 import com.ampl.AMPL;
 import com.ampl.Parameter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -61,6 +63,30 @@ public class Parser {
         return v;
     }
 
-    //TODO a method that parse dangerousness
+    /**
+     * Returns an hashmap with vertexCouple and Double.
+     * Double is the dangerousness of the arc that goes from source vertex to target vertex.
+     * Source vertex is the nearest to school.
+     * @return
+     */
+    public HashMap<VertexCouple,Double> getDangerousness(){
+        HashMap<VertexCouple,Double> dangMap = new HashMap<>();
+        // get all vertices and add school to them
+        List<Vertex> vertexList = getVertexListWithoutSchool();
+        vertexList.add(0,getSchool());
+        // for each couple of verteces create a vertexCouple, parse the corresponding dang and add to hashmap
+        for(int i = 0; i<vertexList.size();i++){
+            for(int j = 0; j< vertexList.size();j++){
+                VertexCouple vertexCouple = new VertexCouple(vertexList.get(j),vertexList.get(i));
+                //parse dangerousness
+                Parameter dangParam = ampl.getParameter("d");
+                Double dang = (double) dangParam.get(i,j);
+                dangMap.put(vertexCouple,dang);
+            }
+        }
+
+        return dangMap;
+
+    }
 
 }
