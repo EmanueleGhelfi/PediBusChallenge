@@ -15,6 +15,7 @@ public class GraphUtility {
     private static HashMap<VertexCouple,Double> mapDangerousness = new HashMap<>();
 
 
+    //setter for dangerousness
     public static void setMapDangerousness(HashMap<VertexCouple, Double> mapDang) {
         mapDangerousness = mapDang;
     }
